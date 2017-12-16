@@ -1,0 +1,30 @@
+{
+  "name": "storage-cache",
+  "version": "1.1.0-0",
+  "description": "A plugin to store Js item in cache, to allow reduction of ajax calls in runtime",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MigLexVic/RuntimeJsCache.git"
+  },
+  "keywords": [
+    "runtime",
+    "realtime",
+    "js",
+    "javascript",
+    "ajax",
+    "cache",
+    "localStorage",
+    "sessionStorage",
+    "xhr"
+  ],
+  "author": "MigLexVic",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MigLexVic/RuntimeJsCache/issues"
+  },
+  "homepage": "https://github.com/MigLexVic/RuntimeJsCache#readme"
+}

@@ -2,7 +2,7 @@ var CONFIG = {
     info_prefix: 'RJC_info_',
     data_prefix: 'RJC_data_',
     storage: localStorage,
-    expires: 60000
+    expires: 600000
 }
 
 /**
@@ -23,7 +23,8 @@ var setInstance = function () {
  * @param key
  * @param value
  */
-function insertInCache (key, value, expires = CONFIG.expires) {
+function insertInCache (key, value, expires) {
+    if (expires == null) expires = CONFIG.expires
     CONFIG.storage.setItem( CONFIG.info_prefix + key, JSON.stringify({created: Date.now(), expires: (Date.now() + expires), forceUpdate: false}))
     CONFIG.storage.setItem( CONFIG.data_prefix + key, JSON.stringify(value) )
 }
@@ -40,14 +41,20 @@ function getFromCache (key) {
 
         // Do the item exists
         if (info == null) return false
-        // Did the item expired
-        if(Date.now() > info.expires){ CONFIG.storage.removeItem(CONFIG.info_prefix + key); CONFIG.storage.removeItem(CONFIG.data_prefix + key); return false}
+        // Did the item expired? remove it
+        if(Date.now() > info.expires){
+            CONFIG.storage.removeItem(CONFIG.info_prefix + key);
+            CONFIG.storage.removeItem(CONFIG.data_prefix + key);
+            return false
+        }
 
         //Returns the data or false
         var data = JSON.parse(CONFIG.storage.getItem(CONFIG.data_prefix + key))
-        return (data) ? data : false
+        if (data == null || !Object.keys(data).length) return false
+
+        return data
     } catch (Exception) {
-        console.error('Error returning cached contents')
+        console.error('[storage-cache] Error returning cached contents', Exception.message)
         return false
     }
 
@@ -68,11 +75,11 @@ function clearFromCache (key) {
  * @param key
  * @param content
  */
-function forceUpdateCache (key, content = null) {
+function forceUpdateCache (key, contents) {
     // Gets the current contents
-    var info = JSON.parse(CONFIG.storage.getItem(CONFIG.storage.getItem(CONFIG.info_prefix + key)))
-    var data = JSON.parse(CONFIG.storage.getItem(CONFIG.storage.getItem(CONFIG.data_prefix + key)))
-
+    var info = (JSON.parse(CONFIG.storage.getItem(CONFIG.storage.getItem(CONFIG.info_prefix + key))) || {})
+    var data = (JSON.parse(CONFIG.storage.getItem(CONFIG.storage.getItem(CONFIG.data_prefix + key))) || {})
+    if (info == null || data == null) return false
     // If recive contents, override them, other wise mark the item to return false next time that will be called
     if (contents !== null) {
         info = {created: Date.now(), expires: (Date.now() + CONFIG.expires), forceUpdate: false}
